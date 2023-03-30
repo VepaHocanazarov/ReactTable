@@ -15,6 +15,15 @@ function App() {
     email: ""
   });
 
+  const [editFormData, setEditFormData] = useState({
+    fullName: "",
+    address: "",
+    phoneNumber: "",
+    email: ""
+  });
+
+  const [editContactId, setEditContactId] = useState(null);
+
   const handleAddFormChange = (event) => {
     event.preventDefault();
 
@@ -26,6 +35,19 @@ function App() {
 
     setAddFormData(newFormData);
   };
+
+  const handleEditFormChange = (event) => {
+    event.preventDefault();
+
+    const fieldName = event.target.getAttribute("name");
+
+    const fieldValue = event.target.value;
+
+    const newFormData = { ...editFormData };
+    newFormData[fieldName] = fieldValue;
+
+    setEditFormData(newFormData);
+  }
 
   const handleAddFormSubmit = (event) => {
     event.preventDefault();
@@ -42,30 +64,93 @@ function App() {
     setContact(newContacts);
   };
 
+  const handleEditFormSubmit = (event) => {
+    event.preventDefault();
+
+    const editContact = {
+      id: editContactId,
+      fullName: editFormData.fullName,
+      address: editFormData.address,
+      phoneNumber: editFormData.phoneNumber,
+      email: editFormData.email
+
+    }
+
+    const newContacts = [...contact];
+
+    const index = contact.findIndex((contact) => contact.id === editContactId)
+
+    newContacts[index] = editContact;
+
+    setContact(newContacts);
+
+    setEditContactId(null);
+  }
+
+  const handleEditClick = (event, contact) => {
+    event.preventDefault();
+    setEditContactId(contact.id);
+
+    const formValue = {
+      fullName: contact.fullName,
+      address: contact.address,
+      phoneNumber: contact.phoneNumber,
+      email: contact.email,
+    }
+
+    setEditFormData(formValue);
+  };
+
+  const handleCancelClick = ()=>{
+    setEditContactId(null);
+  };
+
+  const handleDeleteClick = (contactId)=>{
+   const newContacts = [...contact];
+
+   const index = contact.findIndex((contact)=> contact.id === contactId);
+    
+   newContacts.splice(index,1);
+
+   setContact(newContacts)
+  }
+
   return (
     <div className="app-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Address</th>
-            <th>Phone Number</th>
-            <th>Email</th>
-          </tr>
-        </thead>
+      <form onSubmit={handleEditFormSubmit} >
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Address</th>
+              <th>Phone Number</th>
+              <th>Email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {contact.map((contact) => (
+          <tbody>
+            {contact.map((contact) => (
 
-            <>
-              <EditableRow />
-              <ReadOnlyRow contact={contact} />
-            </>
+              <>
 
-          ))}
+                {editContactId === contact.id ? (<EditableRow
+                  editFormData={editFormData}
+                  handleEditFormChange={handleEditFormChange}
+                  handleCancelClick = {handleCancelClick} />)
 
-        </tbody>
-      </table>
+                  : (<ReadOnlyRow contact={contact}
+                     handleEditClick={handleEditClick} 
+                     handleDeleteClick = {handleDeleteClick} />)
+                }
+
+              </>
+
+            ))}
+
+          </tbody>
+        </table>
+      </form>
 
 
       <h2> Add a Contact</h2>
