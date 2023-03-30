@@ -2,6 +2,7 @@ import './App.css';
 import { useState } from "react";
 import {nanoid} from "nanoid";
 import data from "./data.json";
+import ReadOnlyRow from './components/ReadOnlyRow';
 
 function App() {
 
@@ -54,12 +55,7 @@ function App() {
 
         <tbody>
           {contact.map((contact) => (
-            <tr>
-              <td>{contact.fullName}</td>
-              <td>{contact.address}</td>
-              <td>{contact.phoneNumber}</td>
-              <td>{contact.email}</td>
-            </tr>
+                <ReadOnlyRow contact = {contact} />
           ))}
 
         </tbody>
